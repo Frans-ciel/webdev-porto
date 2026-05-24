@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wear.io | Your Personal Virtual Stylist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <header class="navbar" id="navbar">
+    <div class="navbar__inner">
+      <a href="#" class="navbar__logo">
+        <span class="logo-wear">Wear</span><span class="logo-dot">.</span><span class="logo-io">io</span>
+      </a>
+      <nav class="navbar__links">
+        <a href="#lookbook" class="nav-link">Lookbook</a>
+        <a href="#styler" class="nav-link">Style Me</a>
+        <button class="btn btn--wardrobe" id="openWardrobeBtn">
+          <span class="btn__icon">♡</span>
+          My Wardrobe
+          <span class="wardrobe-count" id="wardrobeCount">0</span>
+        </button>
+      </nav>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#lookbook" class="nav-link">Lookbook</a>
+      <a href="#styler" class="nav-link">Style Me</a>
+      <button class="btn btn--wardrobe mobile-wardrobe-btn" id="openWardrobeBtnMobile">
+        ♡ My Wardrobe <span class="wardrobe-count" id="wardrobeCountMobile">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========== HERO ========== -->
+  <section class="hero">
+    <div class="hero__tape">
+      <span>WEAR SMARTER</span><span>✦</span>
+      <span>LOOK ICONIC</span><span>✦</span>
+      <span>DRESS YOUR TRUTH</span><span>✦</span>
+      <span>WEAR SMARTER</span><span>✦</span>
+      <span>LOOK ICONIC</span><span>✦</span>
+      <span>DRESS YOUR TRUTH</span><span>✦</span>
+    </div>
+    <div class="hero__content">
+      <div class="hero__text">
+        <div class="hero__badge">AI-Powered Style Engine ✦</div>
+        <h1 class="hero__headline">
+          Your <span class="highlight highlight--yellow">body.</span><br/>
+          Your <span class="highlight highlight--pink">vibe.</span><br/>
+          Your <span class="highlight highlight--blue">rules.</span>
+        </h1>
+        <p class="hero__sub">Stop guessing what to wear. Wear.io analyzes your anatomy, undertones, and aesthetic soul to serve you outfits that actually work.</p>
+        <a href="#styler" class="btn btn--primary">Get Styled Now →</a>
+      </div>
+      <div class="hero__graphic">
+        <div class="hero__graphic-card card--yellow">
+          <div class="graphic-label">Skin</div>
+          <div class="graphic-value">Warm ✦</div>
+        </div>
+        <div class="hero__graphic-card card--pink">
+          <div class="graphic-label">Shape</div>
+          <div class="graphic-value">Hourglass ✦</div>
+        </div>
+        <div class="hero__graphic-card card--blue">
+          <div class="graphic-label">Vibe</div>
+          <div class="graphic-value">Old Money ✦</div>
+        </div>
+        <div class="hero__graphic-card card--mint">
+          <div class="graphic-label">Occasion</div>
+          <div class="graphic-value">Cocktail ✦</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== PERSONALIZATION ENGINE ========== -->
+  <section class="styler" id="styler">
+    <div class="styler__header">
+      <div class="section-tag">Style Engine</div>
+      <h2 class="section-title">Tell us about you</h2>
+      <p class="section-sub">Fill in your canvas, context, and vibe — we'll handle the rest.</p>
+    </div>
+
+    <form class="styler__form" id="styleForm">
+      <!-- Gender -->
+      <div class="form-group">
+        <label class="form-label">Gender <span class="label-note">(shapes wardrobe options)</span></label>
+        <div class="chip-group" id="genderGroup" data-name="gender">
+          <button type="button" class="chip" data-value="women">Womenswear</button>
+          <button type="button" class="chip" data-value="men">Menswear</button>
+          <button type="button" class="chip" data-value="all">All / Non-binary</button>
+        </div>
+      </div>
+
+      <!-- Skin Undertone -->
+      <div class="form-group">
+        <label class="form-label">Skin Undertone <span class="label-note">(your natural palette)</span></label>
+        <div class="chip-group" id="undertoneGroup" data-name="undertone">
+          <button type="button" class="chip chip--cool" data-value="cool">❄ Cool</button>
+          <button type="button" class="chip chip--warm" data-value="warm">☀ Warm</button>
+          <button type="button" class="chip chip--neutral" data-value="neutral">◎ Neutral</button>
+        </div>
+      </div>
+
+      <!-- Body Shape -->
+      <div class="form-group">
+        <label class="form-label">Body Shape <span class="label-note">(select yours)</span></label>
+        <div class="chip-group" id="shapeGroup" data-name="bodyShape">
+          <button type="button" class="chip" data-value="hourglass">Hourglass</button>
+          <button type="button" class="chip" data-value="pear">Pear</button>
+          <button type="button" class="chip" data-value="inverted-triangle">Inv. Triangle</button>
+          <button type="button" class="chip" data-value="apple">Apple</button>
+          <button type="button" class="chip" data-value="rectangle">Rectangle</button>
+          <button type="button" class="chip" data-value="trapezoid">Trapezoid</button>
+          <button type="button" class="chip" data-value="triangle">Triangle</button>
+        </div>
+      </div>
+
+      <!-- Occasion -->
+      <div class="form-group">
+        <label class="form-label">Occasion & Dress Code</label>
+        <div class="chip-group" id="occasionGroup" data-name="occasion">
+          <button type="button" class="chip" data-value="casual">Casual</button>
+          <button type="button" class="chip" data-value="smart-casual">Smart Casual</button>
+          <button type="button" class="chip" data-value="business-casual">Business Casual</button>
+          <button type="button" class="chip" data-value="business-formal">Business Formal</button>
+          <button type="button" class="chip" data-value="cocktail">Cocktail</button>
+          <button type="button" class="chip" data-value="black-tie">Black Tie</button>
+        </div>
+      </div>
+
+      <!-- Aesthetic -->
+      <div class="form-group">
+        <label class="form-label">Your Aesthetic Core</label>
+        <div class="chip-group" id="aestheticGroup" data-name="aesthetic">
+          <button type="button" class="chip" data-value="clean-girl">✦ Clean Girl</button>
+          <button type="button" class="chip" data-value="old-money">◆ Old Money</button>
+          <button type="button" class="chip" data-value="gothic">☽ Gothic</button>
+          <button type="button" class="chip" data-value="y2k">★ Y2K</button>
+          <button type="button" class="chip" data-value="gorpcore">⛰ Gorpcore</button>
+          <button type="button" class="chip" data-value="streetwear">◉ Streetwear</button>
+          <button type="button" class="chip" data-value="coquette">✿ Coquette</button>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn--primary btn--large" id="getStylesBtn">
+          Generate My Looks ✦
+        </button>
+        <button type="button" class="btn btn--ghost" id="resetBtn">Reset All</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- ========== LOOKBOOK ========== -->
+  <section class="lookbook" id="lookbook">
+    <div class="lookbook__header">
+      <div class="section-tag" id="lookbookTag">Trending Now</div>
+      <h2 class="section-title" id="lookbookTitle">The Lookbook</h2>
+      <p class="section-sub" id="lookbookSub">Curated outfits from every corner of the aesthetic universe.</p>
+    </div>
+    <div class="lookbook__meta" id="lookbookMeta"></div>
+    <div class="lookbook__grid" id="lookbookGrid">
+      <!-- Cards injected by JS -->
+    </div>
+    <div class="lookbook__empty" id="lookbookEmpty" style="display:none;">
+      <div class="empty-icon">◎</div>
+      <h3>No matches found</h3>
+      <p>Try adjusting your filters — the perfect look might be one slider away.</p>
+      <button class="btn btn--ghost" id="showAllBtn">Show All Outfits</button>
+    </div>
+  </section>
+
+  <!-- ========== OUTFIT MODAL ========== -->
+  <div class="modal-overlay" id="outfitModalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalOutfitName">
+    <div class="modal" id="outfitModal">
+      <button class="modal__close" id="closeOutfitModal" aria-label="Close">✕</button>
+      <div class="modal__inner">
+        <div class="modal__image-col">
+          <div class="modal__image-wrap">
+            <img id="modalImage" src="" alt="" />
+            <div class="modal__aesthetic-badge" id="modalAestheticBadge"></div>
+          </div>
+          <button class="btn btn--fav btn--large" id="modalFavBtn">♡ Save to Wardrobe</button>
+        </div>
+        <div class="modal__info-col">
+          <div class="modal__tags" id="modalTags"></div>
+          <h2 class="modal__name" id="modalOutfitName"></h2>
+          <div class="modal__occasion" id="modalOccasion"></div>
+
+          <div class="modal__why">
+            <div class="modal__why-header">Why this works for you ✦</div>
+            <p class="modal__why-text" id="modalWhy"></p>
+          </div>
+
+          <div class="modal__items">
+            <div class="modal__items-header">The Pieces</div>
+            <ul class="modal__items-list" id="modalItemsList"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== WARDROBE MODAL ========== -->
+  <div class="modal-overlay" id="wardrobeModalOverlay" role="dialog" aria-modal="true" aria-labelledby="wardrobeTitle">
+    <div class="modal modal--wardrobe" id="wardrobeModal">
+      <button class="modal__close" id="closeWardrobeModal" aria-label="Close">✕</button>
+      <div class="wardrobe-modal__header">
+        <div class="section-tag">Saved</div>
+        <h2 class="modal__title" id="wardrobeTitle">My Wardrobe</h2>
+        <p>Your personally curated collection of looks.</p>
+      </div>
+      <div class="wardrobe-grid" id="wardrobeGrid"></div>
+      <div class="wardrobe-empty" id="wardrobeEmpty" style="display:none;">
+        <div class="empty-icon">♡</div>
+        <p>Heart an outfit to save it here.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__logo">
+        <span class="logo-wear">Wear</span><span class="logo-dot">.</span><span class="logo-io">io</span>
+      </div>
+      <p class="footer__copy">© 2025 Wear.io — Dress your truth. No algorithm left behind.</p>
+      <div class="footer__links">
+        <a href="#">Privacy</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
