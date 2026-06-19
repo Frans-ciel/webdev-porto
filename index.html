@@ -96,7 +96,6 @@
         <div class="chip-group" id="genderGroup" data-name="gender">
           <button type="button" class="chip" data-value="women">Womenswear</button>
           <button type="button" class="chip" data-value="men">Menswear</button>
-          <button type="button" class="chip" data-value="all">All / Non-binary</button>
         </div>
       </div>
 
@@ -121,6 +120,26 @@
           <button type="button" class="chip" data-value="rectangle">Rectangle</button>
           <button type="button" class="chip" data-value="trapezoid">Trapezoid</button>
           <button type="button" class="chip" data-value="triangle">Triangle</button>
+        </div>
+      </div>
+
+      <!-- Height -->
+      <div class="form-group">
+        <label class="form-label">Height <span class="label-note">(vertical proportion)</span></label>
+        <div class="chip-group" id="heightGroup" data-name="height">
+          <button type="button" class="chip" data-value="petite">Petite (< 160cm)</button>
+          <button type="button" class="chip" data-value="average">Average</button>
+          <button type="button" class="chip" data-value="tall">Tall (> 170cm)</button>
+        </div>
+      </div>
+
+      <!-- Torso -->
+      <div class="form-group">
+        <label class="form-label">Torso Proportion <span class="label-note">(body balance)</span></label>
+        <div class="chip-group" id="torsoGroup" data-name="torso">
+          <button type="button" class="chip" data-value="short-torso">Short Torso</button>
+          <button type="button" class="chip" data-value="balanced">Balanced</button>
+          <button type="button" class="chip" data-value="long-torso">Long Torso</button>
         </div>
       </div>
 
@@ -241,7 +260,7 @@
       </div>
     </div>
   </footer>
-
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>
 </html>

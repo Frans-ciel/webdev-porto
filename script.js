@@ -1,214 +1,65 @@
 /* ============================================================
-   WEAR.IO — script.js
+   WEAR.IO — script.js (SUPABASE MIGRATION VERSION)
    Virtual Stylist Engine | Vanilla JS
-   ============================================================
-   ARCHITECTURE NOTE:
-   All data lives in `outfitDatabase`. To connect a real backend,
-   replace the `fetchOutfits()` function body with an actual
-   fetch() call to your Supabase endpoint.
    ============================================================ */
 
 'use strict';
 
 /* ============================================================
-   1. DATA LAYER — Mock Database
-   Replace fetchOutfits() with API call when backend is ready.
+   1. SUPABASE INIT
    ============================================================ */
-
-const outfitDatabase = [
-  {
-    id: 'wio-001',
-    name: 'The Gallery Afternoon',
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80',
-    gender: ['women', 'all'],
-    suitableUndertones: ['cool', 'neutral'],
-    suitableBodyShapes: ['hourglass', 'rectangle', 'inverted-triangle'],
-    dressCode: 'smart-casual',
-    aesthetic: 'clean-girl',
-    aestheticLabel: '✦ Clean Girl',
-    occasionLabel: 'Smart Casual',
-    stylingExplanation: 'The straight-cut wide-leg trousers elongate your silhouette and create a balanced frame for your Inverted Triangle or Rectangle shape — adding width below to counterbalance broader shoulders. The crisp ivory tones are perfectly calibrated for Cool and Neutral undertones, reflecting cool-adjacent pigments that illuminate without washing out. This is effortless authority.',
-    items: [
-      { name: 'Wide-Leg Linen Trousers (Ivory)', buyLink: 'https://www.arket.com/en_gbp/women/trousers' },
-      { name: 'Fitted Ribbed Crop Top (White)', buyLink: 'https://www.aritzia.com/en/product/ribbed-tank' },
-      { name: 'Square-Toe Ballet Flats (Bone)', buyLink: 'https://www.zara.com/en/shoes' },
-      { name: 'Micro Tote Bag (Tan)', buyLink: 'https://www.mango.com/en/bags' },
-    ],
-    tags: ['Cool', 'Neutral', 'Hourglass', 'Rectangle', 'Inv. Triangle'],
-  },
-  {
-    id: 'wio-002',
-    name: 'Autumn Boardroom',
-    image: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&q=80',
-    gender: ['women', 'all'],
-    suitableUndertones: ['warm', 'neutral'],
-    suitableBodyShapes: ['hourglass', 'pear', 'apple'],
-    dressCode: 'business-formal',
-    aesthetic: 'old-money',
-    aestheticLabel: '◆ Old Money',
-    occasionLabel: 'Business Formal',
-    stylingExplanation: 'A camel-coloured blazer draped over a forest green knit is a masterclass in warm palette dressing. Camel, terracotta, and olive are Autumn's power tones — they borrow warmth from your undertones and create a rich, luminous complexion. The belted waist defines the Hourglass or creates an intentional waist for Apple and Pear shapes. Structured shoulders project authority, while the midi skirt length elongates without overwhelm.',
-    items: [
-      { name: 'Oversized Camel Wool Blazer', buyLink: 'https://www.cos.com/en_gbp/women/womenswear/blazers' },
-      { name: 'Forest Green Ribbed Knit', buyLink: 'https://www.arket.com/en_gbp/women/knitwear' },
-      { name: 'Caramel Leather Belt', buyLink: 'https://www.massimdutti.com/en/accessories/belts' },
-      { name: 'Chocolate Midi Skirt (A-line)', buyLink: 'https://www.reiss.com/women/skirts' },
-      { name: 'Tan Block-Heel Ankle Boots', buyLink: 'https://www.office.co.uk/women/boots' },
-    ],
-    tags: ['Warm', 'Neutral', 'Hourglass', 'Pear', 'Apple'],
-  },
-  {
-    id: 'wio-003',
-    name: 'Midnight Revelation',
-    image: 'https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&q=80',
-    gender: ['women', 'all'],
-    suitableUndertones: ['cool', 'neutral'],
-    suitableBodyShapes: ['hourglass', 'rectangle', 'pear', 'apple', 'inverted-triangle'],
-    dressCode: 'cocktail',
-    aesthetic: 'gothic',
-    aestheticLabel: '☽ Gothic',
-    occasionLabel: 'Cocktail',
-    stylingExplanation: 'Deep black and midnight plum are the quintessential palette for Cool undertones — they echo the blue and rose undertones in your skin, creating a magnetic, high-contrast look. A structured corset bodice naturally defines and celebrates any shape, while the asymmetric hem draws the eye vertically, creating elongation for Apple and Pear body types. The Silver jewellery amplifies Cool undertone brilliance.',
-    items: [
-      { name: 'Corset Midi Dress (Midnight Black)', buyLink: 'https://www.prettylittlething.com/dresses/midi-dresses' },
-      { name: 'Silver Statement Cuff Bracelet', buyLink: 'https://www.asos.com/women/jewellery' },
-      { name: 'Pointed Black Heeled Ankle Boot', buyLink: 'https://www.kurt-geiger.com/en-gb/women/shoes' },
-      { name: 'Plum Satin Clutch', buyLink: 'https://www.farfetch.com/en-gb/shopping/women/clutches' },
-    ],
-    tags: ['Cool', 'Neutral', 'All Shapes'],
-  },
-  {
-    id: 'wio-004',
-    name: 'Chrome & Chaos',
-    image: 'https://images.unsplash.com/photo-1554412933-514a83d2f3c8?w=600&q=80',
-    gender: ['women', 'all'],
-    suitableUndertones: ['cool', 'neutral'],
-    suitableBodyShapes: ['rectangle', 'inverted-triangle', 'hourglass'],
-    dressCode: 'casual',
-    aesthetic: 'y2k',
-    aestheticLabel: '★ Y2K',
-    occasionLabel: 'Casual',
-    stylingExplanation: 'Low-rise flared denim and a metallic butterfly top is textbook Y2K done right. The flared leg creates volume below the knee, perfectly balancing broader shoulders typical of Inverted Triangle shapes. Cool and Neutral undertones glow under silver and icy pastels — the metallic sheen adds a reflective quality that brings out pink and blue undertone brilliance. This silhouette also celebrates Rectangle shapes by introducing curves through flare.',
-    items: [
-      { name: 'Low-Rise Flared Denim (Medium Wash)', buyLink: 'https://www.levis.com/en-gb/women/jeans/flare' },
-      { name: 'Metallic Butterfly Top (Silver)', buyLink: 'https://www.urban-outfitters.com/women/tops' },
-      { name: 'Platform Chunky Sandals (White)', buyLink: 'https://www.schuh.co.uk/womens/platform-shoes' },
-      { name: 'Mini Croc Bag (Silver)', buyLink: 'https://www.asos.com/women/bags' },
-      { name: 'Tinted Rectangle Sunglasses', buyLink: 'https://www.sunglasshut.com/gb' },
-    ],
-    tags: ['Cool', 'Neutral', 'Rectangle', 'Inv. Triangle', 'Hourglass'],
-  },
-  {
-    id: 'wio-005',
-    name: 'Summit Ready',
-    image: 'https://images.unsplash.com/photo-1493655430114-e2a2c1571277?w=600&q=80',
-    gender: ['men', 'all'],
-    suitableUndertones: ['warm', 'neutral', 'cool'],
-    suitableBodyShapes: ['trapezoid', 'rectangle', 'triangle', 'inverted-triangle'],
-    dressCode: 'casual',
-    aesthetic: 'gorpcore',
-    aestheticLabel: '⛰ Gorpcore',
-    occasionLabel: 'Casual',
-    stylingExplanation: 'Gorpcore is function-first, but the colourway is where personal styling lives. Earthy olive and rust tones are a godsend for Warm undertones, amplifying skin\'s golden warmth. For a Trapezoid or Rectangle build, a relaxed fleece and straight tech pant create balanced, grounded proportions without constricting the frame. Even Cool undertones work here — the vivid cobalt accent pieces create a cool-toned pop against the neutrals.',
-    items: [
-      { name: 'Arc\'teryx Fleece Pullover (Olive)', buyLink: 'https://arcteryx.com/en-gb/fleece' },
-      { name: 'Straight-Fit Trail Pant (Stone)', buyLink: 'https://www.patagonia.com/trousers' },
-      { name: 'Salomon XT-6 Advanced (Trail Grey)', buyLink: 'https://www.salomon.com/en-gb/shop-en_gb/trail-running-shoes' },
-      { name: 'Nalgene Wide-Mouth Water Bottle (Cobalt)', buyLink: 'https://www.nalgene.com/en-gb' },
-      { name: 'Bucket Hat (Khaki)', buyLink: 'https://www.asos.com/men/hats' },
-    ],
-    tags: ['Warm', 'Neutral', 'Cool', 'Trapezoid', 'Rectangle', 'Triangle'],
-  },
-  {
-    id: 'wio-006',
-    name: 'The Uptown Drop',
-    image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=600&q=80',
-    gender: ['men', 'all'],
-    suitableUndertones: ['cool', 'warm', 'neutral'],
-    suitableBodyShapes: ['trapezoid', 'inverted-triangle', 'rectangle'],
-    dressCode: 'smart-casual',
-    aesthetic: 'streetwear',
-    aestheticLabel: '◉ Streetwear',
-    occasionLabel: 'Smart Casual',
-    stylingExplanation: 'An oversized technical jacket in muted black layered over a graphic heavyweight tee and slim tapered cargo pants — this is streetwear operating at its intelligent peak. The monochrome black base works for both Cool (amplifies the cool contrast) and Warm (creates high-drama depth) undertones. For Inverted Triangle and Trapezoid frames, the tapering silhouette of cargo pants balances the upper body, while structured shoulders on the jacket maintain presence without excess.',
-    items: [
-      { name: 'Oversized Technical Jacket (Black)', buyLink: 'https://www.stone-island.com/en-gb/jackets' },
-      { name: 'Heavyweight Graphic Tee (Washed Black)', buyLink: 'https://www.represent-clothing.com/collections/t-shirts' },
-      { name: 'Slim Cargo Trouser (Charcoal)', buyLink: 'https://www.carhartt-wip.com/en-gb/trousers' },
-      { name: 'Nike Air Max 1 (Wolf Grey)', buyLink: 'https://www.nike.com/gb/air-max-1' },
-      { name: 'Minimal Leather Baguette Bag (Black)', buyLink: 'https://www.asos.com/men/bags' },
-    ],
-    tags: ['Cool', 'Warm', 'Neutral', 'Trapezoid', 'Inv. Triangle', 'Rectangle'],
-  },
-  {
-    id: 'wio-007',
-    name: 'Bow & Blush',
-    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80',
-    gender: ['women', 'all'],
-    suitableUndertones: ['cool', 'neutral'],
-    suitableBodyShapes: ['hourglass', 'pear', 'rectangle'],
-    dressCode: 'cocktail',
-    aesthetic: 'coquette',
-    aestheticLabel: '✿ Coquette',
-    occasionLabel: 'Cocktail',
-    stylingExplanation: 'Dusty rose, powder blue, and ivory are the Coquette palette — and they\'re deeply aligned with Cool undertones, mirroring the pink and lavender notes in your complexion. A fitted babydoll silhouette with puffed sleeves is designed to celebrate Hourglass shapes by floating gently over the hips, while adding dimension to Rectangle frames. Lace trim and oversized satin bows are detail-level storytelling — feminine architecture, intentionally constructed.',
-    items: [
-      { name: 'Lace-Trim Babydoll Mini Dress (Dusty Rose)', buyLink: 'https://www.selfridges.com/en-gb/women/dresses' },
-      { name: 'Satin Bow Hair Clip (Ivory)', buyLink: 'https://www.urban-outfitters.com/accessories' },
-      { name: 'Mary Jane Kitten Heels (Powder Blue)', buyLink: 'https://www.asos.com/women/shoes' },
-      { name: 'Pearl Drop Earrings (Silver)', buyLink: 'https://www.missoma.com/en-gb/collections/earrings' },
-      { name: 'Micro Bow Clutch (Ivory Satin)', buyLink: 'https://www.asos.com/women/bags' },
-    ],
-    tags: ['Cool', 'Neutral', 'Hourglass', 'Pear', 'Rectangle'],
-  },
-  {
-    id: 'wio-008',
-    name: 'Sovereign Stance',
-    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=600&q=80',
-    gender: ['men', 'all'],
-    suitableUndertones: ['warm', 'neutral'],
-    suitableBodyShapes: ['trapezoid', 'rectangle', 'triangle'],
-    dressCode: 'business-casual',
-    aesthetic: 'old-money',
-    aestheticLabel: '◆ Old Money',
-    occasionLabel: 'Business Casual',
-    stylingExplanation: 'A heritage check blazer in warm tones (camel, brown, burgundy) with a navy polo and tan chinos is the Warm undertone man\'s strongest hand. The check pattern works with golden-warm skin to create visual harmony — the colour temperature is aligned. A Trapezoid frame fills a structured blazer impeccably, while Rectangle and Triangle builds benefit from the shoulder structure adding perceived width. This is restrained, deliberate, authoritative.',
-    items: [
-      { name: 'Heritage Check Blazer (Camel/Burgundy)', buyLink: 'https://www.paulsmith.com/en-gb/mens/suits' },
-      { name: 'Navy Mercerised Cotton Polo', buyLink: 'https://www.ralphlauren.co.uk/men/polo-shirts' },
-      { name: 'Tailored Chino (Tan)', buyLink: 'https://www.incotex.com/en/men/trousers' },
-      { name: 'Suede Chelsea Boot (Tan)', buyLink: 'https://www.grenson.com/en-gb/mens/chelsea-boots' },
-      { name: 'Gold Watch (Vintage Face)', buyLink: 'https://www.hodinkee.com' },
-    ],
-    tags: ['Warm', 'Neutral', 'Trapezoid', 'Rectangle', 'Triangle'],
-  },
-];
+const { createClient } = supabase;
+const SUPABASE_URL = 'https://nnpguxkczfemlntjdonu.supabase.co'; // Udah gw isiin sesuai screenshot lo
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ucGd1eGtjemZlbWxudGpkb251Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MTE0MjgsImV4cCI6MjA5NTE4NzQyOH0.bQk7Ze7cms0jdjaguEJlcNzdO_COHhxKuPRE2b1t-uw'; // Cari di menu API Keys Supabase
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ============================================================
-   2. API SIMULATION LAYER
-   Replace `fetchOutfits()` with real fetch() when Supabase is ready.
+   2. API FETCH LAYER 
    ============================================================ */
+const OUTFIT_CACHE_KEY = 'wio_outfits_cache';
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-/**
- * Simulates an async API call. Replace this function body with:
- *
- * async function fetchOutfits(filters = {}) {
- *   const { data, error } = await supabase
- *     .from('outfits')
- *     .select('*')
- *     .match(filters);
- *   if (error) throw error;
- *   return data;
- * }
- */
 async function fetchOutfits() {
-  return new Promise(resolve => setTimeout(() => resolve([...outfitDatabase]), 120));
+  // Check in-memory cache first (survives SPA navigation, not page refresh)
+  if (window.__wioOutfitsCache && Date.now() - window.__wioOutfitsCache.ts < CACHE_TTL_MS) {
+    return window.__wioOutfitsCache.data;
+  }
+
+  const { data, error } = await supabaseClient
+    .from('outfits')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) throw error;
+
+  const normalised = data.map(normaliseOutfit);
+  window.__wioOutfitsCache = { data: normalised, ts: Date.now() };
+  return normalised;
+}
+
+function normaliseOutfit(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    image: row.image,
+    gender: row.gender,
+    suitableUndertones: row.suitable_undertones,
+    suitableBodyShapes: row.suitable_body_shapes,
+    suitableHeights: row.suitable_heights || [], 
+    suitableTorsos: row.suitable_torsos || [],  
+    dressCode: row.dress_code,
+    aesthetic: row.aesthetic,
+    aestheticLabel: row.aesthetic_label,
+    occasionLabel: row.occasion_label,
+    stylingExplanation: row.styling_explanation,
+    items: row.items,
+    tags: row.tags,
+  };
 }
 
 /* ============================================================
    3. STATE
    ============================================================ */
-
 const state = {
   allOutfits: [],
   filteredOutfits: [],
@@ -216,6 +67,8 @@ const state = {
     gender: null,
     undertone: null,
     bodyShape: null,
+    height: null,
+    torso: null,
     occasion: null,
     aesthetic: null,
   },
@@ -225,35 +78,86 @@ const state = {
 };
 
 /* ============================================================
-   4. LOCALSTORAGE (Wardrobe Persistence)
+   4. WARDROBE PERSISTENCE (Supabase + LocalStorage Fallback)
    ============================================================ */
+async function loadFavoritesFromStorage() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
 
-function loadFavoritesFromStorage() {
-  try {
-    const stored = localStorage.getItem('wio_favorites');
-    state.favorites = stored ? JSON.parse(stored) : [];
-  } catch {
-    state.favorites = [];
+  if (!user) {
+    try {
+      const stored = localStorage.getItem('wio_favorites');
+      state.favorites = stored ? JSON.parse(stored) : [];
+    } catch {
+      state.favorites = [];
+    }
+    return;
   }
+
+  const { data, error } = await supabaseClient
+    .from('user_favorites')
+    .select('outfit_id')
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('[Wear.io] Failed to load favorites:', error.message);
+    state.favorites = [];
+    return;
+  }
+
+  state.favorites = data.map(row => row.outfit_id);
 }
 
-function saveFavoritesToStorage() {
-  localStorage.setItem('wio_favorites', JSON.stringify(state.favorites));
-}
+function saveFavoritesToStorage() {} // No-op stub
 
 function isFavorited(id) {
   return state.favorites.includes(id);
 }
 
-function toggleFavorite(id) {
-  if (isFavorited(id)) {
+async function toggleFavorite(id) {
+  const alreadySaved = isFavorited(id);
+
+  // Optimistic local update
+  if (alreadySaved) {
     state.favorites = state.favorites.filter(f => f !== id);
   } else {
     state.favorites.push(id);
   }
-  saveFavoritesToStorage();
+  
   updateWardrobeCounts();
   refreshFavButtonStates();
+
+  // Persist to Supabase or LocalStorage
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (!user) {
+    localStorage.setItem('wio_favorites', JSON.stringify(state.favorites));
+    return;
+  }
+
+  if (alreadySaved) {
+    const { error } = await supabaseClient
+      .from('user_favorites')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('outfit_id', id);
+
+    if (error) {
+      console.error('[Wear.io] Failed to remove favorite:', error.message);
+      state.favorites.push(id); // Revert
+      updateWardrobeCounts();
+      refreshFavButtonStates();
+    }
+  } else {
+    const { error } = await supabaseClient
+      .from('user_favorites')
+      .insert({ user_id: user.id, outfit_id: id });
+
+    if (error) {
+      console.error('[Wear.io] Failed to save favorite:', error.message);
+      state.favorites = state.favorites.filter(f => f !== id); // Revert
+      updateWardrobeCounts();
+      refreshFavButtonStates();
+    }
+  }
 }
 
 function updateWardrobeCounts() {
@@ -263,14 +167,12 @@ function updateWardrobeCounts() {
 }
 
 function refreshFavButtonStates() {
-  // Grid fav buttons
   document.querySelectorAll('[data-fav-id]').forEach(btn => {
     const id = btn.dataset.favId;
     btn.classList.toggle('is-saved', isFavorited(id));
     btn.textContent = isFavorited(id) ? '♥' : '♡';
   });
 
-  // Modal fav button
   if (state.activeOutfit) {
     const modalFavBtn = document.getElementById('modalFavBtn');
     if (modalFavBtn) {
@@ -284,7 +186,6 @@ function refreshFavButtonStates() {
 /* ============================================================
    5. RENDERING — Outfit Grid
    ============================================================ */
-
 const AESTHETIC_COLORS = {
   'clean-girl':  '#f5f5f5',
   'old-money':   '#f5e9d0',
@@ -336,13 +237,11 @@ function renderOutfitCard(outfit) {
     </div>
   `;
 
-  // Click card → open outfit modal
   card.addEventListener('click', e => {
     if (e.target.closest('.outfit-card__fav')) return;
     openOutfitModal(outfit);
   });
 
-  // Click heart → toggle favorite
   card.querySelector('.outfit-card__fav').addEventListener('click', e => {
     e.stopPropagation();
     toggleFavorite(outfit.id);
@@ -384,12 +283,6 @@ function renderLookbookGrid(outfits) {
 /* ============================================================
    6. FILTERING ENGINE
    ============================================================ */
-
-/**
- * Core recommendation logic.
- * Each pillar is optional — empty filters show all outfits.
- * Score-based matching with threshold for partial matches.
- */
 function filterOutfits(outfits, filters) {
   if (!filters || !Object.values(filters).some(Boolean)) return outfits;
 
@@ -401,22 +294,26 @@ function filterOutfits(outfits, filters) {
       maxScore += 2;
       if (outfit.gender.includes(filters.gender) || outfit.gender.includes('all')) score += 2;
     }
-
     if (filters.undertone) {
       maxScore += 3;
       if (outfit.suitableUndertones.includes(filters.undertone)) score += 3;
     }
-
     if (filters.bodyShape) {
       maxScore += 3;
       if (outfit.suitableBodyShapes.includes(filters.bodyShape)) score += 3;
     }
-
+    if (filters.height) {
+      maxScore += 2;
+      if (outfit.suitableHeights && outfit.suitableHeights.includes(filters.height)) score += 2;
+    }
+    if (filters.torso) {
+      maxScore += 2;
+      if (outfit.suitableTorsos && outfit.suitableTorsos.includes(filters.torso)) score += 2;
+    }
     if (filters.occasion) {
       maxScore += 2;
       if (outfit.dressCode === filters.occasion) score += 2;
     }
-
     if (filters.aesthetic) {
       maxScore += 2;
       if (outfit.aesthetic === filters.aesthetic) score += 2;
@@ -426,7 +323,6 @@ function filterOutfits(outfits, filters) {
     return { outfit, score, pct };
   });
 
-  // Return outfits that match at least 40% of active filters
   return scored
     .filter(s => s.pct >= 0.4)
     .sort((a, b) => b.score - a.score)
@@ -436,7 +332,6 @@ function filterOutfits(outfits, filters) {
 /* ============================================================
    7. OUTFIT MODAL
    ============================================================ */
-
 function openOutfitModal(outfit) {
   state.activeOutfit = outfit;
 
@@ -446,20 +341,17 @@ function openOutfitModal(outfit) {
   document.getElementById('modalOccasion').textContent = `${outfit.occasionLabel} · ${outfit.aestheticLabel}`;
   document.getElementById('modalWhy').textContent = outfit.stylingExplanation;
 
-  // Aesthetic badge
   const badge = document.getElementById('modalAestheticBadge');
   badge.textContent = outfit.aestheticLabel;
   badge.style.background = getAestheticBg(outfit.aesthetic);
   badge.style.color = getAestheticTextColor(outfit.aesthetic);
 
-  // Tags
   const tagsEl = document.getElementById('modalTags');
   tagsEl.innerHTML = outfit.tags.map((t, i) => {
     const cls = i === 0 ? 'tag tag--undertone' : i === 1 ? 'tag tag--shape' : 'tag';
     return `<span class="${cls}">${t}</span>`;
   }).join('');
 
-  // Items
   const itemsList = document.getElementById('modalItemsList');
   itemsList.innerHTML = outfit.items.map(item => `
     <li class="modal__item">
@@ -470,7 +362,6 @@ function openOutfitModal(outfit) {
     </li>
   `).join('');
 
-  // Fav button
   refreshFavButtonStates();
 
   const overlay = document.getElementById('outfitModalOverlay');
@@ -487,7 +378,6 @@ function closeOutfitModal() {
 /* ============================================================
    8. WARDROBE MODAL
    ============================================================ */
-
 function openWardrobeModal() {
   renderWardrobeGrid();
   document.getElementById('wardrobeModalOverlay').classList.add('is-open');
@@ -544,7 +434,6 @@ function renderWardrobeGrid() {
 /* ============================================================
    9. CHIP SELECTION (Form UI)
    ============================================================ */
-
 function initChipGroups() {
   document.querySelectorAll('.chip-group').forEach(group => {
     group.addEventListener('click', e => {
@@ -554,14 +443,12 @@ function initChipGroups() {
       const name = group.dataset.name;
       const value = chip.dataset.value;
 
-      // Deselect if already active
       if (chip.classList.contains('is-active')) {
         chip.classList.remove('is-active');
         state.selectedFilters[name] = null;
         return;
       }
 
-      // Deactivate siblings
       group.querySelectorAll('.chip').forEach(c => c.classList.remove('is-active'));
       chip.classList.add('is-active');
       state.selectedFilters[name] = value;
@@ -572,10 +459,8 @@ function initChipGroups() {
 /* ============================================================
    10. FORM SUBMISSION & RESET
    ============================================================ */
-
 function handleFormSubmit(e) {
   e.preventDefault();
-
   const hasAnyFilter = Object.values(state.selectedFilters).some(Boolean);
 
   if (!hasAnyFilter) {
@@ -589,19 +474,13 @@ function handleFormSubmit(e) {
   }
 
   renderLookbookGrid(state.filteredOutfits);
-
-  // Scroll to lookbook
   document.getElementById('lookbook').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function handleReset() {
-  // Clear filter state
   Object.keys(state.selectedFilters).forEach(k => (state.selectedFilters[k] = null));
-
-  // Deactivate all chips
   document.querySelectorAll('.chip.is-active').forEach(c => c.classList.remove('is-active'));
-
-  // Show all
+  
   state.filteredOutfits = [...state.allOutfits];
   state.isFiltered = false;
 
@@ -628,7 +507,6 @@ function updateLookbookHeaders(isFiltered) {
 /* ============================================================
    11. HAMBURGER MENU
    ============================================================ */
-
 function initHamburger() {
   const hamburger = document.getElementById('hamburger');
   const menu = document.getElementById('mobileMenu');
@@ -638,7 +516,6 @@ function initHamburger() {
     menu.classList.toggle('is-open');
   });
 
-  // Close on nav link click
   menu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
       hamburger.classList.remove('is-open');
@@ -650,19 +527,15 @@ function initHamburger() {
 /* ============================================================
    12. EVENT LISTENERS
    ============================================================ */
-
 function bindEventListeners() {
-  // Form
   document.getElementById('styleForm').addEventListener('submit', handleFormSubmit);
   document.getElementById('resetBtn').addEventListener('click', handleReset);
 
-  // Modals — Outfit
   document.getElementById('closeOutfitModal').addEventListener('click', closeOutfitModal);
   document.getElementById('outfitModalOverlay').addEventListener('click', e => {
     if (e.target === document.getElementById('outfitModalOverlay')) closeOutfitModal();
   });
 
-  // Modals — Wardrobe
   document.getElementById('openWardrobeBtn').addEventListener('click', openWardrobeModal);
   document.getElementById('openWardrobeBtnMobile').addEventListener('click', () => {
     document.getElementById('hamburger').classList.remove('is-open');
@@ -674,15 +547,12 @@ function bindEventListeners() {
     if (e.target === document.getElementById('wardrobeModalOverlay')) closeWardrobeModal();
   });
 
-  // Modal fav button
   document.getElementById('modalFavBtn').addEventListener('click', () => {
     if (state.activeOutfit) toggleFavorite(state.activeOutfit.id);
   });
 
-  // Show all (from empty state)
   document.getElementById('showAllBtn').addEventListener('click', handleReset);
 
-  // Escape key
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeOutfitModal();
@@ -694,21 +564,24 @@ function bindEventListeners() {
 /* ============================================================
    13. INIT
    ============================================================ */
-
 async function init() {
-  loadFavoritesFromStorage();
   initChipGroups();
   initHamburger();
   bindEventListeners();
 
   try {
-    const outfits = await fetchOutfits();
+    // Run outfit fetch and favorites load in parallel for faster startup
+    const [outfits] = await Promise.all([
+      fetchOutfits(),
+      loadFavoritesFromStorage(), // now async
+    ]);
+
     state.allOutfits = outfits;
     state.filteredOutfits = [...outfits];
     renderLookbookGrid(state.filteredOutfits);
     updateWardrobeCounts();
   } catch (err) {
-    console.error('[Wear.io] Failed to load outfits:', err);
+    console.error('[Wear.io] Init failed:', err);
     document.getElementById('lookbookGrid').innerHTML = `
       <p style="padding:40px;font-family:var(--font-mono);color:#999;">
         Failed to load outfits. Please refresh.
