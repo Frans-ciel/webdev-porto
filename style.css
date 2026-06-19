@@ -1008,3 +1008,32 @@ ul { list-style: none; }
   .lookbook__grid { grid-template-columns: 1fr; }
   .hero__graphic { grid-template-columns: 1fr 1fr; }
 }
+
+/* =========================================
+   ANIMASI RUNNING TEXT (MARQUEE)
+   ========================================= */
+.hero__tape {
+  overflow: hidden; /* Biar teks yang keluar layar nggak bikin webnya geser */
+  white-space: nowrap;
+  width: 100%;
+}
+
+.marquee-track {
+  display: inline-flex;
+  gap: 1.5rem; /* Jarak antar kata, bisa lo atur sendiri */
+  animation: scroll-left 20s linear infinite; /* 20s itu kecepatannya, makin kecil angkanya makin ngebut */
+}
+
+.marquee-track span {
+  display: inline-block;
+}
+
+/* Mesin animasinya */
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); /* Geser persis setengah jalan terus ngulang lagi */
+  }
+}
