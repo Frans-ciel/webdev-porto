@@ -389,6 +389,29 @@ function closeWardrobeModal() {
   document.body.style.overflow = '';
 }
 
+/* ============================================================
+   SURPRISE ME ENGINE (RANDOMIZER)
+   ============================================================ */
+function triggerSurpriseMe(targetGender) {
+  // Cari semua baju yang cocok sama gender yang diklik (termasuk yang unisex/all)
+  const matches = state.allOutfits.filter(outfit => 
+    outfit.gender.includes(targetGender) || outfit.gender.includes('all')
+  );
+
+  // Jaga-jaga kalau data di database belum ada
+  if (matches.length === 0) {
+    alert(`Belum ada koleksi baju buat ${targetGender} nih!`);
+    return;
+  }
+
+  // Ngacak nomor buat milih 1 baju
+  const randomIndex = Math.floor(Math.random() * matches.length);
+  const surpriseOutfit = matches[randomIndex];
+
+  // Panggil fungsi modal yang udah ada buat nampilin bajunya
+  openOutfitModal(surpriseOutfit);
+}
+
 function renderWardrobeGrid() {
   const grid = document.getElementById('wardrobeGrid');
   const empty = document.getElementById('wardrobeEmpty');

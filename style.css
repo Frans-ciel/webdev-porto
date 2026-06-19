@@ -1037,3 +1037,58 @@ ul { list-style: none; }
     transform: translateX(-50%); /* Geser persis setengah jalan terus ngulang lagi */
   }
 }
+
+/* =========================================
+   GENDER SPLIT (SURPRISE ME)
+   ========================================= */
+.gender-split-container {
+  display: flex;
+  width: 100%;
+  height: 100%; /* Atau sesuaikan dengan tinggi area kanan lo */
+  min-height: 600px; 
+}
+
+.gender-box {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid var(--black);
+}
+
+/* Biar pas di-hover agak membesar estetik */
+.gender-box:hover {
+  transform: scale(0.98);
+  filter: brightness(1.1);
+}
+
+.gender-box--men {
+  background-color: var(--blue);
+  color: var(--white);
+  border-right: none; /* Biar garis tengahnya nggak dobel */
+}
+
+.gender-box--women {
+  background-color: var(--pink);
+  color: var(--white);
+}
+
+.gender-box__tag {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.gender-box h2 {
+  font-size: 3rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
