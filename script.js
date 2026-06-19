@@ -589,4 +589,81 @@ async function init() {
   }
 }
 
+/* ============================================================
+   14. AUTHENTICATION (Google OAuth)
+   ============================================================ */
+
+const authBtn = document.getElementById('authBtn');
+const authModalOverlay = document.getElementById('authModalOverlay');
+const closeAuthModalBtn = document.getElementById('closeAuthModal');
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+
+function openAuthModal() {
+  authModalOverlay.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal() {
+  authModalOverlay.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+
+// Fungsi nge-trigger Login Google
+googleLoginBtn.addEventListener('click', async () => {
+  googleLoginBtn.innerHTML = 'Redirecting...';
+  
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin // Balik ke halaman lo (localhost) setelah login
+    }
+  });
+
+  if (error) {
+    console.error("[Wear.io] Google Login Error:", error.message);
+    googleLoginBtn.innerHTML = 'Continue with Google';
+    alert("Gagal menghubungkan ke Google. Cek console.");
+  }
+});
+
+async function handleAuthBtnClick() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  
+  if (user) {
+    // Kalau udah login, berarti tombol ini jadi fungsi LOGOUT
+    await supabaseClient.auth.signOut();
+    state.favorites = []; 
+    await loadFavoritesFromStorage(); // Balik ke Guest Mode (localStorage)
+    renderLookbookGrid(state.filteredOutfits);
+    updateWardrobeCounts();
+  } else {
+    openAuthModal();
+  }
+}
+
+// Supabase otomatis deteksi kalau user selesai login dari Google
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    authBtn.textContent = 'Logout';
+    authBtn.style.color = 'var(--pink-dark)';
+    closeAuthModal(); 
+    
+    // Tarik data favorit user dari server
+    await loadFavoritesFromStorage();
+    renderLookbookGrid(state.filteredOutfits);
+    updateWardrobeCounts();
+  } else {
+    authBtn.textContent = 'Login';
+    authBtn.style.color = 'inherit';
+  }
+});
+
+// Bind Events
+closeAuthModalBtn.addEventListener('click', closeAuthModal);
+authModalOverlay.addEventListener('click', e => {
+  if (e.target === authModalOverlay) closeAuthModal();
+});
+authBtn.addEventListener('click', handleAuthBtnClick);
+
+
 document.addEventListener('DOMContentLoaded', init);
