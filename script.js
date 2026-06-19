@@ -630,13 +630,13 @@ async function handleAuthBtnClick() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   
   if (user) {
-    // Kalau udah login, berarti tombol ini jadi fungsi LOGOUT
+    // Kalau udah login, Sign Out
     await supabaseClient.auth.signOut();
-    state.favorites = []; 
-    await loadFavoritesFromStorage(); // Balik ke Guest Mode (localStorage)
-    renderLookbookGrid(state.filteredOutfits);
-    updateWardrobeCounts();
+    
+    // JURUS PAMUNGKAS: Langsung refresh webnya biar memori browser keriset total ✦
+    window.location.reload(); 
   } else {
+    // Kalau belum login, buka modal
     openAuthModal();
   }
 }
