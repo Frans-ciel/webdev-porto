@@ -1092,3 +1092,58 @@ ul { list-style: none; }
   text-transform: uppercase;
   margin-bottom: 0.5rem;
 }
+
+/* Container buat ngatur ukuran biar ga kebesaran */
+.flip-card {
+  flex: 1; /* Biar ngebagi 2 rata (50% 50%) */
+  perspective: 1000px; /* Kedalaman 3D */
+  cursor: pointer;
+}
+
+.border-left {
+  border-left: 4px solid black; /* Garis tengah ala brutalist */
+}
+
+/* Animasi putar */
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); /* Efek smooth */
+  transform-style: preserve-3d;
+}
+
+/* Class ini bakal dipasang via JS pas di-klik */
+.flip-card.is-flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Sisi depan dan belakang */
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Biar sisi sebaliknya ga keliatan tembus */
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Styling sisi belakang */
+.flip-card-back {
+  background-color: #fff;
+  transform: rotateY(180deg);
+  padding: 20px;
+}
+
+.outfit-result-img {
+  max-height: 250px;
+  width: auto;
+  object-fit: cover;
+  border: 3px solid black;
+  box-shadow: 4px 4px 0px black;
+  margin-bottom: 20px;
+}

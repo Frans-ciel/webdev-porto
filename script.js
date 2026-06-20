@@ -390,10 +390,21 @@ function closeWardrobeModal() {
 }
 
 /* ============================================================
-   SURPRISE ME ENGINE (RANDOMIZER)
+   SURPRISE ME ENGINE (RANDOMIZER & 3D FLIP)
    ============================================================ */
-function triggerSurpriseMe(targetGender) {
-  // Cari semua baju yang cocok sama gender yang diklik (termasuk yang unisex/all)
+function handleSurprise(genderType) {
+  const card = document.getElementById(`card-${genderType}`);
+
+  // Kalau kartu udah kebalik, klik lagi buat ngebalikin ke depan
+  if (card.classList.contains('is-flipped')) {
+    card.classList.remove('is-flipped');
+    return;
+  }
+
+  // Nyesuain parameter 'mens'/'womens' dari HTML biar cocok sama database ('menswear'/'womenswear')
+  const targetGender = genderType === 'mens' ? 'menswear' : 'womenswear';
+
+  // Filter baju dari state yang udah di-load sama Supabase
   const matches = state.allOutfits.filter(outfit => 
     outfit.gender.includes(targetGender) || outfit.gender.includes('all')
   );
@@ -408,8 +419,18 @@ function triggerSurpriseMe(targetGender) {
   const randomIndex = Math.floor(Math.random() * matches.length);
   const surpriseOutfit = matches[randomIndex];
 
-  // Panggil fungsi modal yang udah ada buat nampilin bajunya
-  openOutfitModal(surpriseOutfit);
+  // Suntik datanya ke bagian belakang kartu (backFace)
+  const backFace = document.getElementById(`back-${genderType}`);
+  backFace.innerHTML = `
+    <img src="${surpriseOutfit.image}" alt="${surpriseOutfit.name}" class="outfit-result-img" style="max-height: 250px; width: auto; object-fit: cover; border: 3px solid black; box-shadow: 4px 4px 0px black; margin-bottom: 20px;">
+    <h3 style="font-family: monospace; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 5px;">${surpriseOutfit.name}</h3>
+    <p style="font-weight: bold; background: var(--yellow, yellow); color: black; border: 2px solid black; padding: 5px 15px; display: inline-block;">
+      ${surpriseOutfit.aestheticLabel}
+    </p>
+  `;
+
+  // Puter kartunya!
+  card.classList.add('is-flipped');
 }
 
 function renderWardrobeGrid() {

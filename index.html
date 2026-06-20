@@ -73,21 +73,39 @@
         <a href="#styler" class="btn btn--primary">Get Styled Now →</a>
       </div>
       <div class="gender-split-container">
-        <!-- Kotak Cowok -->
-        <div class="gender-box gender-box--men" id="surpriseMenBtn">
-          <div class="gender-box__content">
-            <span class="gender-box__tag">MENSWEAR</span>
-            <h2>GENTLEMEN</h2>
-            <p>Surprise Me ✦</p>
+        <!-- KARTU MENSWEAR -->
+        <div class="flip-card" id="card-mens" onclick="handleSurprise('mens')">
+          <div class="flip-card-inner">
+            <!-- SISI DEPAN (Desain Lama Lo) -->
+            <div class="flip-card-front gender-box gender-box--men">
+              <div class="gender-box__content">
+                <span class="gender-box__tag">MENSWEAR</span>
+                <h2>GENTLEMEN</h2>
+                <p>Surprise Me ✦</p>
+              </div>
+            </div>
+            <!-- SISI BELAKANG (Muncul Pas Di-klik) -->
+            <div class="flip-card-back" id="back-mens">
+              <!-- JS bakal suntik hasil outfit ke sini -->
+            </div>
           </div>
         </div>
 
-        <!-- Kotak Cewek -->
-        <div class="gender-box gender-box--women" id="surpriseWomenBtn">
-          <div class="gender-box__content">
-            <span class="gender-box__tag">WOMENSWEAR</span>
-            <h2>LADIES</h2>
-            <p>Surprise Me ✦</p>
+        <!-- KARTU WOMENSWEAR -->
+        <div class="flip-card" id="card-womens" onclick="handleSurprise('womens')">
+          <div class="flip-card-inner">
+            <!-- SISI DEPAN (Desain Lama Lo) -->
+            <div class="flip-card-front gender-box gender-box--women">
+              <div class="gender-box__content">
+                <span class="gender-box__tag">WOMENSWEAR</span>
+                <h2>LADIES</h2>
+                <p>Surprise Me ✦</p>
+              </div>
+            </div>
+            <!-- SISI BELAKANG (Muncul Pas Di-klik) -->
+            <div class="flip-card-back" id="back-womens">
+              <!-- JS bakal suntik hasil outfit ke sini -->
+            </div>
           </div>
         </div>
       </div>
