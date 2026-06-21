@@ -71,6 +71,7 @@ const state = {
     torso: null,
     occasion: null,
     aesthetic: null,
+    searchQuery: ''
   },
   activeOutfit: null,
   favorites: [],
@@ -281,12 +282,33 @@ function renderLookbookGrid(outfits) {
 }
 
 /* ============================================================
-   6. FILTERING ENGINE
+   6. FILTERING ENGINE (WITH SEARCH)
    ============================================================ */
 function filterOutfits(outfits, filters) {
+  // Kalau nggak ada filter sama sekali (termasuk text search kosong), balikin semua
   if (!filters || !Object.values(filters).some(Boolean)) return outfits;
 
-  const scored = outfits.map(outfit => {
+  let result = outfits;
+
+  // 1. FILTER SEARCH TEXT (Nyari berdasarkan nama, aesthetic, atau tags)
+  if (filters.searchQuery) {
+    const query = filters.searchQuery.toLowerCase();
+    result = result.filter(o => 
+      o.name.toLowerCase().includes(query) ||
+      o.aestheticLabel.toLowerCase().includes(query) ||
+      o.tags.some(tag => tag.toLowerCase().includes(query))
+    );
+  }
+
+  // Cek apakah ada filter CHIP yang lagi diklik
+  const chipKeys = ['gender', 'undertone', 'bodyShape', 'height', 'torso', 'occasion', 'aesthetic'];
+  const hasChipFilter = chipKeys.some(k => filters[k]);
+
+  // Kalau user cuma ngetik di search bar tanpa ngeklik chip, langsung balikin hasil ketikannya
+  if (!hasChipFilter) return result;
+
+  // 2. FILTER CHIPS (Scoring Engine)
+  const scored = result.map(outfit => {
     let score = 0;
     let maxScore = 0;
 
@@ -522,8 +544,16 @@ function handleFormSubmit(e) {
 }
 
 function handleReset() {
+  // Kosongin semua state filter
   Object.keys(state.selectedFilters).forEach(k => (state.selectedFilters[k] = null));
+  state.selectedFilters.searchQuery = ''; // ✦ TAMBAHAN: Reset teks pencarian di memori
+
+  // Hapus class active dari semua chip
   document.querySelectorAll('.chip.is-active').forEach(c => c.classList.remove('is-active'));
+  
+  // ✦ TAMBAHAN: Kosongin kotak ketikan search bar di layar
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) searchInput.value = '';
   
   state.filteredOutfits = [...state.allOutfits];
   state.isFiltered = false;
@@ -603,6 +633,22 @@ function bindEventListeners() {
       closeWardrobeModal();
     }
   });
+
+  // ✦ TAMBAHAN: Event listener buat ngebaca ketikan di search bar secara real-time ✦
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      state.selectedFilters.searchQuery = e.target.value;
+      
+      // Jalanin ulang logic filter
+      state.filteredOutfits = filterOutfits(state.allOutfits, state.selectedFilters);
+      
+      // Update header dan grid
+      state.isFiltered = Object.values(state.selectedFilters).some(Boolean);
+      updateLookbookHeaders(state.isFiltered);
+      renderLookbookGrid(state.filteredOutfits);
+    });
+  }
 }
 
 /* ============================================================
