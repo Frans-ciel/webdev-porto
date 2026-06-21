@@ -558,18 +558,22 @@ function handleFormSubmit(e) {
   }
 
   renderLookbookGrid(state.filteredOutfits);
+
+  // Menyembunyikan form dan nampilin tombol Adjust Filter
+  document.getElementById('styleForm').style.display = 'none';
+  const searchContainer = document.querySelector('.search-container');
+  if (searchContainer) searchContainer.style.display = 'none';
+  
+  document.getElementById('editFilterBtn').style.display = 'inline-block';
   document.getElementById('lookbook').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function handleReset() {
-  // Kosongin semua state filter
   Object.keys(state.selectedFilters).forEach(k => (state.selectedFilters[k] = null));
-  state.selectedFilters.searchQuery = ''; // ✦ TAMBAHAN: Reset teks pencarian di memori
+  state.selectedFilters.searchQuery = ''; 
 
-  // Hapus class active dari semua chip
   document.querySelectorAll('.chip.is-active').forEach(c => c.classList.remove('is-active'));
   
-  // ✦ TAMBAHAN: Kosongin kotak ketikan search bar di layar
   const searchInput = document.getElementById('searchInput');
   if (searchInput) searchInput.value = '';
   
@@ -578,6 +582,12 @@ function handleReset() {
 
   updateLookbookHeaders(false);
   renderLookbookGrid(state.filteredOutfits);
+
+  // Mengembalikan form
+  document.getElementById('styleForm').style.display = 'block';
+  const searchContainer = document.querySelector('.search-container');
+  if (searchContainer) searchContainer.style.display = 'block';
+  document.getElementById('editFilterBtn').style.display = 'none';
 }
 
 function updateLookbookHeaders(isFiltered) {
@@ -655,16 +665,31 @@ function bindEventListeners() {
     }
   });
 
-  // Event listener buat ngebaca ketikan di search bar secara real-time
+  // ✦ EVENT BUAT TOMBOL ADJUST FILTERS ✦
+  const editFilterBtn = document.getElementById('editFilterBtn');
+  if (editFilterBtn) {
+    editFilterBtn.addEventListener('click', () => {
+      // Munculin form-nya lagi
+      document.getElementById('styleForm').style.display = 'block';
+      const searchContainer = document.querySelector('.search-container');
+      if (searchContainer) searchContainer.style.display = 'block';
+      
+      // Sembunyiin tombol ini
+      editFilterBtn.style.display = 'none';
+      
+      // Scroll balik ke area form
+      document.getElementById('styler').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  // ✦ EVENT BUAT SEARCH BAR REAL-TIME ✦
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
       state.selectedFilters.searchQuery = e.target.value;
       
-      // Jalanin ulang logic filter
       state.filteredOutfits = filterOutfits(state.allOutfits, state.selectedFilters);
       
-      // Update header dan grid
       state.isFiltered = Object.values(state.selectedFilters).some(Boolean);
       updateLookbookHeaders(state.isFiltered);
       renderLookbookGrid(state.filteredOutfits);
