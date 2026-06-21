@@ -282,7 +282,7 @@ function renderLookbookGrid(outfits) {
 }
 
 /* ============================================================
-   6. FILTERING ENGINE (WITH SEARCH)
+   6. FILTERING ENGINE (CRITICAL BUG FIX: HARD GENDER FILTER)
    ============================================================ */
 function filterOutfits(outfits, filters) {
   // Kalau nggak ada filter sama sekali (termasuk text search kosong), balikin semua
@@ -290,7 +290,23 @@ function filterOutfits(outfits, filters) {
 
   let result = outfits;
 
-  // 1. FILTER SEARCH TEXT (Nyari berdasarkan nama, aesthetic, atau tags)
+  // --- LANGKAH 1: HARD FILTERS (Harus Cocok Total) ---
+
+  // A. HARD FILTER: GENDER ✦ (Inilah kunci benerin bug-nya!)
+  if (filters.gender) {
+    // result = Hanya simpan baju yang Array gender-nya berisi nilai yang dipilih (men/women)
+    result = result.filter(outfit => 
+      outfit.gender && outfit.gender.includes(filters.gender)
+    );
+  }
+
+  // B. HARD FILTER: OCCASION (DRESS CODE)
+  // Biar kalau user cari 'casual', yang 'business-formal' ilang total dulu
+  if (filters.occasion) {
+    result = result.filter(outfit => outfit.dressCode === filters.occasion);
+  }
+
+  // --- LANGKAH 2: TEXT SEARCH FILTER (Jalan di hasil hard filter) ---
   if (filters.searchQuery) {
     const query = filters.searchQuery.toLowerCase();
     result = result.filter(o => 
@@ -300,22 +316,21 @@ function filterOutfits(outfits, filters) {
     );
   }
 
-  // Cek apakah ada filter CHIP yang lagi diklik
-  const chipKeys = ['gender', 'undertone', 'bodyShape', 'height', 'torso', 'occasion', 'aesthetic'];
-  const hasChipFilter = chipKeys.some(k => filters[k]);
+  // --- LANGKAH 3: SOFT FILTERS (Sistem Scoring / Kecocokan Alternatif) ---
+  // Kita cek apakah ada filter CHIP LAIN (selain gender/occasion) yang diklik
+  const softChipKeys = ['undertone', 'bodyShape', 'height', 'torso', 'aesthetic'];
+  const hasSoftFilter = softChipKeys.some(k => filters[k]);
 
-  // Kalau user cuma ngetik di search bar tanpa ngeklik chip, langsung balikin hasil ketikannya
-  if (!hasChipFilter) return result;
+  // Kalau cuma milih gender doang tanpa soft filter, langsung balikin hasilnya
+  if (!hasSoftFilter) return result;
 
-  // 2. FILTER CHIPS (Scoring Engine)
+  // Scoring engine hanya jalan di hasil yang udah di-filter strict gender/occasion tadi
   const scored = result.map(outfit => {
     let score = 0;
     let maxScore = 0;
 
-    if (filters.gender) {
-      maxScore += 2;
-      if (outfit.gender.includes(filters.gender) || outfit.gender.includes('all')) score += 2;
-    }
+    // (Gender & Occasion removed from scoring, they are now hard filters above)
+
     if (filters.undertone) {
       maxScore += 3;
       if (outfit.suitableUndertones.includes(filters.undertone)) score += 3;
@@ -332,10 +347,6 @@ function filterOutfits(outfits, filters) {
       maxScore += 2;
       if (outfit.suitableTorsos && outfit.suitableTorsos.includes(filters.torso)) score += 2;
     }
-    if (filters.occasion) {
-      maxScore += 2;
-      if (outfit.dressCode === filters.occasion) score += 2;
-    }
     if (filters.aesthetic) {
       maxScore += 2;
       if (outfit.aesthetic === filters.aesthetic) score += 2;
@@ -346,7 +357,7 @@ function filterOutfits(outfits, filters) {
   });
 
   return scored
-    .filter(s => s.pct >= 0.4)
+    .filter(s => s.pct >= 0.4) // Threshold tetep jalan buat soft filters
     .sort((a, b) => b.score - a.score)
     .map(s => s.outfit);
 }
