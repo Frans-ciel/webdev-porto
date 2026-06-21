@@ -282,68 +282,81 @@ function renderLookbookGrid(outfits) {
 }
 
 /* ============================================================
-   6. FILTERING ENGINE (CRITICAL BUG FIX 2.0: ARRAY MATCHING)
+   6. FILTERING ENGINE (ULTIMATE BULLETPROOF VERSION 🛡️)
    ============================================================ */
 function filterOutfits(outfits, filters) {
+  // Kalau nggak ada filter, balikin semua data
   if (!filters || !Object.values(filters).some(Boolean)) return outfits;
 
   let result = outfits;
 
-  // --- LANGKAH 1: HARD FILTERS ---
-
-  // A. HARD FILTER: GENDER ✦ (Udah disesuaiin sama nama di database)
+  // --- 1. HARD FILTER: GENDER ---
   if (filters.gender) {
-    // Nambahin 'wear' otomatis biar cocok ('women' jadi 'womenswear')
-    const targetGender = filters.gender + 'wear'; 
-    result = result.filter(outfit => 
-      outfit.gender && (outfit.gender.includes(targetGender) || outfit.gender.includes('all'))
-    );
+    const targetGender = filters.gender === 'men' ? 'menswear' : 'womenswear';
+    result = result.filter(outfit => {
+      // Ubah apapun tipe datanya jadi string huruf kecil biar kebal error
+      const g = JSON.stringify(outfit.gender || []).toLowerCase();
+      return g.includes(targetGender) || g.includes('all');
+    });
   }
 
-  // B. HARD FILTER: OCCASION (DRESS CODE)
+  // --- 2. HARD FILTER: OCCASION ---
   if (filters.occasion) {
-    result = result.filter(outfit => outfit.dressCode === filters.occasion);
+    result = result.filter(outfit => {
+      const occ = (outfit.dressCode || '').toLowerCase();
+      return occ === filters.occasion.toLowerCase();
+    });
   }
 
-  // --- LANGKAH 2: TEXT SEARCH FILTER ---
+  // --- 3. TEXT SEARCH FILTER ---
   if (filters.searchQuery) {
     const query = filters.searchQuery.toLowerCase();
-    result = result.filter(o => 
-      o.name.toLowerCase().includes(query) ||
-      o.aestheticLabel.toLowerCase().includes(query) ||
-      o.tags.some(tag => tag.toLowerCase().includes(query))
-    );
+    result = result.filter(o => {
+      const nameMatch = (o.name || '').toLowerCase().includes(query);
+      const aestheticMatch = (o.aestheticLabel || '').toLowerCase().includes(query);
+      // Pake JSON.stringify buat nyari di dalem array tags
+      const tagsMatch = JSON.stringify(o.tags || []).toLowerCase().includes(query);
+      
+      return nameMatch || aestheticMatch || tagsMatch;
+    });
   }
 
-  // --- LANGKAH 3: SOFT FILTERS (Sistem Scoring) ---
+  // --- 4. SOFT FILTERS (Scoring) ---
   const softChipKeys = ['undertone', 'bodyShape', 'height', 'torso', 'aesthetic'];
   const hasSoftFilter = softChipKeys.some(k => filters[k]);
 
+  // Kalau cuma milih gender/search tanpa klik chip detail, langsung tampilin
   if (!hasSoftFilter) return result;
 
   const scored = result.map(outfit => {
     let score = 0;
     let maxScore = 0;
 
+    // Bikin string dari array buat bypass bug Supabase
+    const undertones = JSON.stringify(outfit.suitableUndertones || []).toLowerCase();
+    const shapes = JSON.stringify(outfit.suitableBodyShapes || []).toLowerCase();
+    const heights = JSON.stringify(outfit.suitableHeights || []).toLowerCase();
+    const torsos = JSON.stringify(outfit.suitableTorsos || []).toLowerCase();
+
     if (filters.undertone) {
       maxScore += 3;
-      if (outfit.suitableUndertones.includes(filters.undertone)) score += 3;
+      if (undertones.includes(filters.undertone.toLowerCase())) score += 3;
     }
     if (filters.bodyShape) {
       maxScore += 3;
-      if (outfit.suitableBodyShapes.includes(filters.bodyShape)) score += 3;
+      if (shapes.includes(filters.bodyShape.toLowerCase())) score += 3;
     }
     if (filters.height) {
       maxScore += 2;
-      if (outfit.suitableHeights && outfit.suitableHeights.includes(filters.height)) score += 2;
+      if (heights.includes(filters.height.toLowerCase())) score += 2;
     }
     if (filters.torso) {
       maxScore += 2;
-      if (outfit.suitableTorsos && outfit.suitableTorsos.includes(filters.torso)) score += 2;
+      if (torsos.includes(filters.torso.toLowerCase())) score += 2;
     }
     if (filters.aesthetic) {
       maxScore += 2;
-      if (outfit.aesthetic === filters.aesthetic) score += 2;
+      if ((outfit.aesthetic || '').toLowerCase() === filters.aesthetic.toLowerCase()) score += 2;
     }
 
     const pct = maxScore > 0 ? score / maxScore : 0;
