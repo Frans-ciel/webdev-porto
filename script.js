@@ -649,10 +649,13 @@ function bindEventListeners() {
     if (e.key === 'Escape') {
       closeOutfitModal();
       closeWardrobeModal();
+      // ✦ TAMBAHAN: Tutup dropdown kalau pencet Escape
+      const dropdown = document.getElementById('profileDropdown');
+      if (dropdown) dropdown.style.display = 'none';
     }
   });
 
-  // ✦ TAMBAHAN: Event listener buat ngebaca ketikan di search bar secara real-time ✦
+  // Event listener buat ngebaca ketikan di search bar secara real-time
   const searchInput = document.getElementById('searchInput');
   if (searchInput) {
     searchInput.addEventListener('input', (e) => {
@@ -698,13 +701,19 @@ async function init() {
 }
 
 /* ============================================================
-   14. AUTHENTICATION (Google OAuth)
+   14. AUTHENTICATION & PROFILE MENU (Google OAuth)
    ============================================================ */
-
 const authBtn = document.getElementById('authBtn');
 const authModalOverlay = document.getElementById('authModalOverlay');
 const closeAuthModalBtn = document.getElementById('closeAuthModal');
 const googleLoginBtn = document.getElementById('googleLoginBtn');
+
+// Elemen Profile Dropdown
+const profileDropdown = document.getElementById('profileDropdown');
+const logoutActionBtn = document.getElementById('logoutActionBtn');
+const profileName = document.getElementById('profileName');
+const profileEmail = document.getElementById('profileEmail');
+const profileAvatar = document.getElementById('profileAvatar');
 
 function openAuthModal() {
   authModalOverlay.classList.add('is-open');
@@ -734,26 +743,45 @@ googleLoginBtn.addEventListener('click', async () => {
   }
 });
 
-async function handleAuthBtnClick() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
+// Interaksi klik tombol akun di header buat buka dropdown/modal
+authBtn.addEventListener('click', async (e) => {
+  e.stopPropagation(); // Mencegah event klik bocor ke background
+  const { data: { session } } = await supabaseClient.auth.getSession();
   
-  if (user) {
-    // Kalau udah login, Sign Out
-    await supabaseClient.auth.signOut();
-    
-    // JURUS PAMUNGKAS: Langsung refresh webnya biar memori browser keriset total ✦
-    window.location.reload(); 
+  if (session) {
+    // Toggle dropdown
+    profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
   } else {
-    // Kalau belum login, buka modal
+    // Kalau belum login, buka modal Google
     openAuthModal();
   }
+});
+
+// Aksi Logout di dalam Dropdown
+if (logoutActionBtn) {
+  logoutActionBtn.addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.reload(); // Refresh halaman setelah logout
+  });
 }
 
-// Supabase otomatis deteksi kalau user selesai login dari Google
+// Supabase otomatis deteksi status login
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
-    authBtn.textContent = 'Logout';
-    authBtn.style.color = 'var(--pink-dark)';
+    // Ekstrak nama dan inisial buat UI
+    const fullName = session.user.user_metadata?.full_name || 'User';
+    const firstName = fullName.split(' ')[0];
+    const initialLetter = firstName.charAt(0).toUpperCase();
+    
+    // Update Tombol Navigasi
+    authBtn.innerHTML = `☻ ${firstName} ▾`;
+    authBtn.style.color = 'inherit';
+    
+    // Update Data di Dropdown Profile
+    if (profileName) profileName.textContent = fullName;
+    if (profileEmail) profileEmail.textContent = session.user.email;
+    if (profileAvatar) profileAvatar.textContent = initialLetter;
+    
     closeAuthModal(); 
     
     // Tarik data favorit user dari server
@@ -761,17 +789,25 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     renderLookbookGrid(state.filteredOutfits);
     updateWardrobeCounts();
   } else {
-    authBtn.textContent = 'Login';
+    // State saat belum login
+    authBtn.innerHTML = 'Login';
     authBtn.style.color = 'inherit';
+    if (profileDropdown) profileDropdown.style.display = 'none';
   }
 });
 
-// Bind Events
+// UX Tweak: Tutup dropdown kalau nge-klik di luar areanya
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.auth-wrapper') && profileDropdown) {
+    profileDropdown.style.display = 'none';
+  }
+});
+
+// Bind Events buat tutup Modal Login
 closeAuthModalBtn.addEventListener('click', closeAuthModal);
 authModalOverlay.addEventListener('click', e => {
   if (e.target === authModalOverlay) closeAuthModal();
 });
-authBtn.addEventListener('click', handleAuthBtnClick);
 
 
 document.addEventListener('DOMContentLoaded', init);
