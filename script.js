@@ -729,11 +729,11 @@ async function init() {
    14. AUTHENTICATION & PROFILE MENU (Google OAuth)
    ============================================================ */
 const authBtn = document.getElementById('authBtn');
+const authBtnMobile = document.getElementById('authBtnMobile'); // ✦ Tambahan buat HP
 const authModalOverlay = document.getElementById('authModalOverlay');
 const closeAuthModalBtn = document.getElementById('closeAuthModal');
 const googleLoginBtn = document.getElementById('googleLoginBtn');
 
-// Elemen Profile Dropdown
 const profileDropdown = document.getElementById('profileDropdown');
 const logoutActionBtn = document.getElementById('logoutActionBtn');
 const profileName = document.getElementById('profileName');
@@ -750,17 +750,13 @@ function closeAuthModal() {
   document.body.style.overflow = '';
 }
 
-// Fungsi nge-trigger Login Google
+// Trigger Login Google
 googleLoginBtn.addEventListener('click', async () => {
   googleLoginBtn.innerHTML = 'Redirecting...';
-  
   const { error } = await supabaseClient.auth.signInWithOAuth({
     provider: 'google',
-    options: {
-      redirectTo: window.location.origin // Balik ke halaman lo (localhost) setelah login
-    }
+    options: { redirectTo: window.location.origin }
   });
-
   if (error) {
     console.error("[Wear.io] Google Login Error:", error.message);
     googleLoginBtn.innerHTML = 'Continue with Google';
@@ -768,71 +764,94 @@ googleLoginBtn.addEventListener('click', async () => {
   }
 });
 
-// Interaksi klik tombol akun di header buat buka dropdown/modal
+// Klik tombol akun di Desktop
 authBtn.addEventListener('click', async (e) => {
-  e.stopPropagation(); // Mencegah event klik bocor ke background
+  e.stopPropagation(); 
   const { data: { session } } = await supabaseClient.auth.getSession();
-  
   if (session) {
-    // Toggle dropdown
     profileDropdown.style.display = profileDropdown.style.display === 'none' ? 'block' : 'none';
   } else {
-    // Kalau belum login, buka modal Google
     openAuthModal();
   }
 });
 
-// Aksi Logout di dalam Dropdown
-if (logoutActionBtn) {
-  logoutActionBtn.addEventListener('click', async () => {
-    await supabaseClient.auth.signOut();
-    window.location.reload(); // Refresh halaman setelah logout
+// ✦ Klik tombol akun di HP ✦
+if (authBtnMobile) {
+  authBtnMobile.addEventListener('click', async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      // Di HP, langsung tanya mau Sign Out atau nggak (biar ga usah bikin dropdown lagi)
+      if (confirm('Do you want to Sign Out?')) {
+        await supabaseClient.auth.signOut();
+        window.location.reload();
+      }
+    } else {
+      // Tutup menu hamburger, lalu buka modal login
+      document.getElementById('hamburger').classList.remove('is-open');
+      document.getElementById('mobileMenu').classList.remove('is-open');
+      openAuthModal();
+    }
   });
 }
 
-// Supabase otomatis deteksi status login
+// Aksi Logout di Dropdown Desktop
+if (logoutActionBtn) {
+  logoutActionBtn.addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+  });
+}
+
+// Deteksi Status Login (Desktop & HP)
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
-    // Ekstrak nama dan inisial buat UI
     const fullName = session.user.user_metadata?.full_name || 'User';
     const firstName = fullName.split(' ')[0];
     const initialLetter = firstName.charAt(0).toUpperCase();
     
-    // Update Tombol Navigasi
+    // Update Desktop
     authBtn.innerHTML = `☻ ${firstName} ▾`;
     authBtn.style.color = 'inherit';
-    
-    // Update Data di Dropdown Profile
     if (profileName) profileName.textContent = fullName;
     if (profileEmail) profileEmail.textContent = session.user.email;
     if (profileAvatar) profileAvatar.textContent = initialLetter;
     
-    closeAuthModal(); 
+    // Update HP
+    if (authBtnMobile) {
+      authBtnMobile.innerHTML = `☻ ${firstName} (Sign Out)`;
+      authBtnMobile.style.background = 'var(--yellow, #ffeb3b)';
+      authBtnMobile.style.color = 'black';
+    }
     
-    // Tarik data favorit user dari server
+    closeAuthModal(); 
     await loadFavoritesFromStorage();
     renderLookbookGrid(state.filteredOutfits);
     updateWardrobeCounts();
   } else {
-    // State saat belum login
+    // Reset Desktop
     authBtn.innerHTML = 'Login';
     authBtn.style.color = 'inherit';
     if (profileDropdown) profileDropdown.style.display = 'none';
+    
+    // Reset HP
+    if (authBtnMobile) {
+      authBtnMobile.innerHTML = 'Login';
+      authBtnMobile.style.background = 'transparent';
+    }
   }
 });
 
-// UX Tweak: Tutup dropdown kalau nge-klik di luar areanya
+// Tutup dropdown kalau klik di luarnya (Desktop)
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.auth-wrapper') && profileDropdown) {
     profileDropdown.style.display = 'none';
   }
 });
 
-// Bind Events buat tutup Modal Login
+// Modal Close Events
 closeAuthModalBtn.addEventListener('click', closeAuthModal);
 authModalOverlay.addEventListener('click', e => {
   if (e.target === authModalOverlay) closeAuthModal();
 });
-
 
 document.addEventListener('DOMContentLoaded', init);
