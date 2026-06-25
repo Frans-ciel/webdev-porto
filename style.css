@@ -1147,3 +1147,121 @@ ul { list-style: none; }
   box-shadow: 4px 4px 0px black;
   margin-bottom: 20px;
 }
+
+/* ============================================================
+   📱 MOBILE RESPONSIVE TWEAKS (WEAR.IO)
+   ============================================================ */
+
+/* ✦ UNTUK TABLET & HP PADA UMUMNYA (Lebar maksimal 768px) ✦ */
+@media (max-width: 768px) {
+  
+  /* 1. Header & Navbar */
+  .navbar__links {
+    display: none !important; /* Sembunyikan menu navigasi desktop */
+  }
+  .hamburger {
+    display: flex !important; /* Munculkan tombol garis tiga */
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .hamburger span {
+    width: 30px;
+    height: 4px;
+    background-color: black;
+    display: block;
+  }
+  
+  /* Tampilan Mobile Menu saat diklik */
+  .mobile-menu {
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border-top: 4px solid black;
+    border-bottom: 4px solid black;
+    padding: 16px;
+    z-index: 999;
+  }
+  .mobile-menu.is-open {
+    display: flex;
+    box-shadow: 0px 8px 0px rgba(0,0,0,1);
+  }
+
+  /* 2. Hero Section (Kartu Gender) */
+  .hero__headline {
+    font-size: 2.5rem !important; /* Perkecil ukuran font judul utama */
+    line-height: 1.1;
+  }
+  .gender-split-container {
+    flex-direction: column; /* Ubah kartu Menswear/Womenswear jadi atas-bawah */
+    gap: 20px;
+  }
+  .flip-card {
+    width: 100%;
+    height: 220px; /* Sesuaikan tinggi kartu untuk HP */
+  }
+
+  /* 3. Styler Engine (Form Filter & Search) */
+  .styler {
+    padding: 32px 16px; /* Kurangi jarak padding kiri-kanan */
+  }
+  .search-wrapper input {
+    font-size: 1rem !important;
+    padding: 12px 12px 12px 40px !important;
+  }
+  .chip-group {
+    justify-content: flex-start;
+  }
+  .chip {
+    flex: 1 1 calc(50% - 10px); /* Bikin chip tombol berbaris 2 kolom di HP */
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  /* 4. Lookbook Grid (Hasil Outfit) */
+  .lookbook__grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* Tampilkan 2 baju per baris */
+    gap: 16px;
+    padding: 0 16px;
+  }
+  .outfit-card__name {
+    font-size: 1rem;
+  }
+
+  /* 5. Modals (Popup Baju & Wardrobe) */
+  .modal__inner {
+    flex-direction: column; /* Gambar baju di atas, detail teks di bawah */
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal__image-col {
+    width: 100%;
+    border-right: none;
+    border-bottom: 4px solid black;
+    padding-bottom: 16px;
+  }
+  .modal {
+    width: 90% !important;
+    padding: 20px !important;
+  }
+}
+
+/* ✦ UNTUK HP LAYAR KECIL SEKALIPUN (Lebar maksimal 480px) ✦ */
+@media (max-width: 480px) {
+  .hero__headline {
+    font-size: 2.2rem !important;
+  }
+  .lookbook__grid {
+    grid-template-columns: 1fr !important; /* Tampilkan 1 baju full per baris biar jelas */
+  }
+  .chip {
+    flex: 1 1 100%; /* Chip tombol memanjang full 1 baris */
+  }
+}
